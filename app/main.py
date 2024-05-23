@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import datetime
+import requests
 
 app = FastAPI()
 
@@ -10,7 +11,11 @@ counter = 0
 async def root():
     global counter
     counter += 1
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    response = requests.get('http://worldtimeapi.org/api/timezone/Europe/Moscow')
+    if response.status_code == 200:
+        return response.json()['datetime']
+    else:
+        return f"Ошибка при запросе{response.status_code}"
 
 
 @app.get("/statistics")
